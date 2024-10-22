@@ -39,6 +39,7 @@ We encourage feedback and pull requests!
 3. **Follow the On-Screen Prompts:**
    - The script will guide you through several optional setup steps like updating the package list, installing Chromium, configuring display resolution, and more.
    - Sample terminal output:
+     
      <img src="_assets/SampleTerminalOutput.png" alt="Sample terminal output" width="400"/>
 
 ## ⚙️ Customization Options
