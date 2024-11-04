@@ -1,6 +1,6 @@
 # Raspberry Pi Kiosk Display System
 
-Welcome to the **Raspberry Pi Kiosk Display System** project! This project provides an easy-to-configure system to turn your Raspberry Pi into a kiosk, running a full-screen browser with **labwc** (a Wayland compositor) and supporting hardware like the Raspberry Pi 4 and 5.
+Welcome to the **Raspberry Pi Kiosk Display System** project! This project provides an easy-to-configure system to turn your Raspberry Pi into a kiosk, running a full-screen browser with **labwc** (a Wayland compositor) and supporting hardware like the newer Raspberry Pi 4 and 5.
 
 Previously, we worked on [**Buildroot-WebKit**](https://github.com/TOLDOTECHNIK/buildroot-webkit), but due to challenges in porting to newer hardware, we've transitioned to this solution based on **Raspberry Pi OS** and **Chromium browser**. While we are no longer maintaining Buildroot-WebKit for Raspberry Pi 4 and 5, this new setup offers flexibility, **3D-accelerated graphics**, and ease of use for many kiosk display scenarios.
 
@@ -8,13 +8,13 @@ We encourage feedback and pull requests!
 
 ## 🚀 Features
 
-- **Supports Raspberry Pi 4 & 5**: Tested with Raspberry Pi OS Bookworm (2024-07-04).
-- **3D-Accelerated Graphics**: Utilizes hardware-accelerated graphics for improved performance in kiosk applications.
+- **Supports almost all Raspberry Pi boards**: Tested with Raspberry Pi 5 and Raspberry Pi Zero 2 W).
+- **3D-accelerated graphics**: Utilizes hardware-accelerated graphics for improved performance in kiosk applications.
 - **Wayland & labwc**: Provides a smooth experience with Wayland display server protocol and labwc compositor.
-- **Chromium in Kiosk Mode**: Runs Chromium in full-screen kiosk mode, perfect for web-based digital signage. NOTE: Chromium requires at least 1GB of RAM but may still run on lower specifications.
-- **Customizable Resolution**: Easily configure screen resolutions.
-- **Auto-Start & Auto-Login**: Uses `greetd` to auto-start labwc at boot.
-- **Plymouth Splash Screen**: Optionally configure a custom splash screen for a polished boot experience.
+- **Chromium in kiosk mode**: Runs Chromium in full-screen kiosk mode, perfect for web-based digital signage. NOTE: Chromium requires at least 1GB of RAM but may still run on lower specifications.
+- **Customizable resolution**: Easily configure screen resolutions.
+- **auto-start**: Uses `greetd` to auto-start labwc at boot.
+- **Plymouth splash screen**: Optionally configure a custom splash screen for a polished boot experience.
 - **Sound**: Sound has not been tested yet in this setup.
 
 ## 📋 Requirements
