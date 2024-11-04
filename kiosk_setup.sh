@@ -10,6 +10,7 @@
 
 # History
 # 2024-10-22 v1.0: Initial release
+# 2024-11-04 V1.1: Switch from wayfire to labwc
 
 # Function to display a spinner with additional message
 spinner() {
@@ -67,6 +68,14 @@ if ask_user "Do you want to upgrade installed packages?"; then
     spinner $! "Upgrading installed packages..."
 fi
 
+# install Wayland/labwc packages?
+echo
+if ask_user "Do you want to install Wayland and labwc packages?"; then
+    echo -e "\e[90mInstalling Wayland packages, please wait...\e[0m"
+    sudo apt install --no-install-recommends -y labwc seatd > /dev/null 2>&1 &
+    spinner $! "Installing Wayland packages..."
+fi
+
 # install Chromium Browser?
 echo
 if ask_user "Do you want to install Chromium Browser?"; then
@@ -75,99 +84,11 @@ if ask_user "Do you want to install Chromium Browser?"; then
     spinner $! "Installing Chromium Browser..."
 fi
 
-# install Wayland packages and Wayfire config?
-echo
-if ask_user "Do you want to install Wayland packages and do Wayfire default config?"; then
-    echo -e "\e[90mInstalling Wayland packages, please wait...\e[0m"
-    sudo apt install --no-install-recommends -y wayfire seatd xdg-user-dirs mesa-utils libgl1-mesa-dri > /dev/null 2>&1 &
-    spinner $! "Installing Wayland packages..."
-    
-    # Create the wayfire.ini configuration file if it doesn't exist
-    echo -e "\e[90mSetting up Wayfire configuration...\e[0m"
-    mkdir -p ~/.config
-    
-    if [ ! -f ~/.config/wayfire.ini ]; then
-        cat <<EOL > ~/.config/wayfire.ini
-[core]
-plugins = \\
-  autostart \\
-  hide-cursor
-  
-[autostart]
-chromium = chromium-browser --incognito --autoplay-policy=no-user-gesture-required --kiosk https://webglsamples.org/aquarium/aquarium.html
-EOL
-        echo -e "\e[32mwayfire.ini file created and configured.\e[0m"
-    else
-        echo -e "\e[33mwayfire.ini already exists, skipping creation.\e[0m"
-    fi
-fi
-
-# Combine resolution configuration for both cmdline.txt and wayfire.ini into one block
-echo
-if ask_user "Do you want to configure a resolution in cmdline.txt and wayfire.ini?"; then
-    # List of common resolutions
-    resolutions=("1920x1080@60" "1280x720@60" "1024x768@60" "1600x900@60" "1366x768@60")
-
-    # Prompt user to choose a resolution
-    echo -e "\e[94mPlease choose a resolution:\e[0m"
-    select RESOLUTION in "${resolutions[@]}"; do
-        if [[ -n "$RESOLUTION" ]]; then
-            echo -e "\e[32mYou selected $RESOLUTION\e[0m"
-            break
-        else
-            echo -e "\e[33mInvalid selection, please try again.\e[0m"
-        fi
-    done
-
-    # Add resolution to /boot/firmware/cmdline.txt if not already present
-    CMDLINE_FILE="/boot/firmware/cmdline.txt"
-    if ! grep -q "video=" "$CMDLINE_FILE"; then
-        echo -e "\e[90mAdding video=$RESOLUTION to $CMDLINE_FILE...\e[0m"
-        sudo sed -i "1s/^/video=HDMI-A-1:$RESOLUTION /" "$CMDLINE_FILE"
-        echo -e "\e[32mResolution added to cmdline.txt successfully!\e[0m"
-    else
-        echo -e "\e[33mcmdline.txt already contains a video entry. No changes made.\e[0m"
-    fi
-
-    # Add resolution to wayfire.ini
-    WAYFIRE_CONFIG_DIR="$HOME/.config"
-    WAYFIRE_CONFIG_FILE="$WAYFIRE_CONFIG_DIR/wayfire.ini"
-    echo -e "\e[90mAdding resolution to wayfire.ini...\e[0m"
-    if ! grep -q "\[output:HDMI-A-1\]" "$WAYFIRE_CONFIG_FILE"; then
-        mkdir -p "$WAYFIRE_CONFIG_DIR"
-        echo -e "\n[output:HDMI-A-1]\nmode = $RESOLUTION" >> "$WAYFIRE_CONFIG_FILE"
-        echo -e "\e[32mResolution added to wayfire.ini successfully!\e[0m"
-    else
-        echo -e "\e[33mwayfire.ini already contains an output entry for HDMI-A-1. No changes made.\e[0m"
-    fi
-fi
-
-# install Wayfire hide cursor plugin?
-echo
-if ask_user "Do you want to install the Wayfire hide cursor plugin?"; then
-    echo -e "\e[90mInstalling Wayfire hide cursor plugin, please wait...\e[0m"
-    wget https://github.com/seffs/wayfire-plugins-extra-raspbian/releases/download/v0.7.5/wayfire-plugins-extra-raspbian-aarch64.tar.xz > /dev/null 2>&1 &
-    spinner $! "Downloading Wayfire hide cursor plugin..."
-
-    echo -e "\e[90mExtracting plugin files...\e[0m"
-    tar xf wayfire-plugins-extra-raspbian-aarch64.tar.xz > /dev/null 2>&1 &
-    spinner $! "Extracting plugin files..."
-
-    echo -e "\e[90mCopying plugin files to the system...\e[0m"
-    sudo cp usr/share/wayfire/metadata/hide-cursor.xml /usr/share/wayfire/metadata/
-    sudo cp usr/lib/aarch64-linux-gnu/wayfire/libhide-cursor.so /usr/lib/aarch64-linux-gnu/wayfire/
-
-    # Clean up downloaded and extracted files
-    echo -e "\e[90mCleaning up temporary files...\e[0m"
-    rm -rf ./usr
-    rm wayfire-plugins-extra-raspbian-aarch64.tar.xz
-fi
-
 # install and configure greetd?
 echo
-if ask_user "Do you want to install and configure greetd for auto start of Wayfire?"; then
+if ask_user "Do you want to install and configure greetd for auto start of labwc?"; then
     # Install greetd
-    echo -e "\e[90mInstalling greetd for auto start of Wayfire, please wait...\e[0m"
+    echo -e "\e[90mInstalling greetd for auto start of labwc, please wait...\e[0m"
     sudo apt install -y greetd > /dev/null 2>&1 &
     spinner $! "Installing greetd..."
 
@@ -179,11 +100,11 @@ if ask_user "Do you want to install and configure greetd for auto start of Wayfi
 [terminal]
 vt = 7
 [default_session]
-command = \"/usr/bin/wayfire\"
+command = \"/usr/bin/labwc\"
 user = \"$CURRENT_USER\"
 EOL"
 
-    echo -e "\e[32mconfig.toml has been created or overwritten successfully!\e[0m"
+    echo -e "\e[32m✔\e[0m config.toml has been created or overwritten successfully!"
 
     # Enable greetd service and set graphical target
     echo -e "\e[90mEnabling greetd service...\e[0m"
@@ -195,6 +116,32 @@ EOL"
     spinner $! "Setting graphical target..."
 fi
 
+# create an autostart script for labwc?
+echo
+if ask_user "Do you want to create an autostart (chromium) script for labwc?"; then
+    # Ask the user for a default URL
+    read -p "Enter the URL to open in Chromium [default: https://webglsamples.org...]: " USER_URL
+    USER_URL="${USER_URL:-https://webglsamples.org/aquarium/aquarium.html}"
+
+    # Create or overwrite /etc/greetd/config.toml
+    echo -e "\e[90mCreating or overwriting config.toml...\e[0m"
+    LABWC_AUTOSTART_DIR="/home/$CURRENT_USER/.config/labwc"
+    mkdir -p "$LABWC_AUTOSTART_DIR"
+    LABWC_AUTOSTART_FILE="$LABWC_AUTOSTART_DIR/autostart"
+    
+    # Create or append Chromium start command to the autostart file
+    if grep -q "chromium" "$LABWC_AUTOSTART_FILE"; then
+        echo "Chromium autostart entry already exists in $LABWC_AUTOSTART_FILE."
+    else
+        echo -e "\e[90mAdding Chromium to labwc autostart script...\e[0m"
+        echo "/usr/bin/chromium-browser --incognito --autoplay-policy=no-user-gesture-required --kiosk $USER_URL &" >> "$LABWC_AUTOSTART_FILE"
+    fi
+    
+    # Provide feedback about the autostart file location
+    echo -e "\e[32m✔\e[0m labwc autostart script has been created or updated at $LABWC_AUTOSTART_FILE."
+fi
+
+
 # install Plymouth splash screen?
 echo
 if ask_user "Do you want to install the Plymouth splash screen?"; then
@@ -204,7 +151,7 @@ if ask_user "Do you want to install the Plymouth splash screen?"; then
         echo -e "\e[90mAdding disable_splash=1 to $CONFIG_TXT...\e[0m"
         sudo bash -c "echo 'disable_splash=1' >> $CONFIG_TXT"
     else
-        echo -e "\e[33m$config_txt already contains a disable_splash option. No changes made. Please check manually!\e[0m"
+        echo -e "\e[33m$CONFIG_TXT already contains a disable_splash option. No changes made. Please check manually!\e[0m"
     fi
 
     # Update /boot/firmware/cmdline.txt
@@ -213,7 +160,7 @@ if ask_user "Do you want to install the Plymouth splash screen?"; then
         echo -e "\e[90mAdding quiet splash plymouth.ignore-serial-consoles to $CMDLINE_TXT...\e[0m"
         sudo sed -i 's/$/ quiet splash plymouth.ignore-serial-consoles/' "$CMDLINE_TXT"
     else
-        echo -e "\e[33m$cmdline_txt already contains splash options. No changes made. Please check manually!\e[0m"
+        echo -e "\e[33m$CMDLINE_TXT already contains splash options. No changes made. Please check manually!\e[0m"
     fi
 
     # Install Plymouth and themes
@@ -233,12 +180,80 @@ if ask_user "Do you want to install the Plymouth splash screen?"; then
             sudo plymouth-set-default-theme $SELECTED_THEME
             sudo update-initramfs -u > /dev/null 2>&1 &
             spinner $! "Updating initramfs..."
-            echo -e "\e[32mPlymouth splash screen installed and configured with $SELECTED_THEME theme.\e[0m"
+            echo -e "\e[32m✔\e[0m Plymouth splash screen installed and configured with $SELECTED_THEME theme."
             break
         else
             echo -e "\e[31mInvalid selection, please try again.\e[0m"
         fi
     done
+fi
+
+# Configure a resolution
+echo
+if ask_user "Do you want to set the screen resolution in cmdline.txt and the labwc autostart file?"; then
+
+    # Check if edid-decode is installed; if not, install it
+    if ! command -v edid-decode &> /dev/null; then
+        echo -e "\e[90mInstalling required tool, please wait...\e[0m"
+        sudo apt install -y edid-decode > /dev/null 2>&1 &
+        spinner $! "Installing edid-decode..."
+        echo -e "\e[32mrequired tool installed successfully!\e[0m"
+    fi
+
+    # Capture the output of edid-decode command
+    edid_output=$(sudo cat /sys/class/drm/card1-HDMI-A-1/edid | edid-decode)
+
+    # Initialize an array to store the formatted resolutions with refresh rates
+    declare -a available_resolutions=()
+
+    # Loop through lines and look for timings with resolutions and refresh rates
+    while IFS= read -r line; do
+        # Match lines with Established, Standard, or Detailed Timings format
+        if [[ "$line" =~ ([0-9]+)x([0-9]+)[[:space:]]+([0-9]+\.[0-9]+|[0-9]+)\ Hz ]]; then
+            resolution="${BASH_REMATCH[1]}x${BASH_REMATCH[2]}"
+            frequency="${BASH_REMATCH[3]}"
+            
+            # Format as "widthxheight@frequencyHz"
+            formatted="${resolution}@${frequency}Hz"
+            available_resolutions+=("$formatted")
+        fi
+    done <<< "$edid_output"
+
+    # Fallback to default list if no resolutions are found
+    if [ ${#available_resolutions[@]} -eq 0 ]; then
+        echo -e "\e[33mNo resolutions found. Using default list.\e[0m"
+        available_resolutions=("1920x1080@60" "1280x720@60" "1024x768@60" "1600x900@60" "1366x768@60")
+    fi
+
+    # Prompt user to choose a resolution
+    echo -e "\e[94mPlease choose a resolution (type in the number):\e[0m"
+    select RESOLUTION in "${available_resolutions[@]}"; do
+        if [[ -n "$RESOLUTION" ]]; then
+            echo -e "\e[32mYou selected $RESOLUTION\e[0m"
+            break
+        else
+            echo -e "\e[33mInvalid selection, please try again.\e[0m"
+        fi
+    done
+
+    # Add the selected resolution to /boot/firmware/cmdline.txt if not already present
+    CMDLINE_FILE="/boot/firmware/cmdline.txt"
+    if ! grep -q "video=" "$CMDLINE_FILE"; then
+        echo -e "\e[90mAdding video=HDMI-A-1:$RESOLUTION to $CMDLINE_FILE...\e[0m"
+        sudo sed -i "1s/^/video=HDMI-A-1:$RESOLUTION /" "$CMDLINE_FILE"
+        echo -e "\e[32m✔\e[0m Resolution added to cmdline.txt successfully!"
+    else
+        echo -e "\e[33mcmdline.txt already contains a video entry. No changes made.\e[0m"
+    fi
+
+    # Add the command to .config/labwc/autostart if not present
+    AUTOSTART_FILE="/home/$USER/.config/labwc/autostart"
+    if ! grep -q "wlr-randr --output HDMI-A-1 --mode $RESOLUTION" "$AUTOSTART_FILE"; then
+        echo "wlr-randr --output HDMI-A-1 --mode $RESOLUTION" >> "$AUTOSTART_FILE"
+        echo -e "\e[32m✔\e[0m Resolution command added to labwc autostart file successfully!"
+    else
+        echo -e "\e[33mAutostart file already contains this resolution command. No changes made.\e[0m"
+    fi
 fi
 
 # cleaning up apt caches
@@ -247,4 +262,4 @@ sudo apt clean > /dev/null 2>&1 &
 spinner $! "Cleaning up apt caches..."
 
 # Print completion message
-echo -e "\e[32mSetup completed successfully! Please reboot your system.\e[0m"
+echo -e "\e[32m✔\e[0m \e[32mSetup completed successfully! Please reboot your system.\e[0m"
