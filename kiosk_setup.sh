@@ -11,6 +11,7 @@
 # History
 # 2024-10-22 v1.0: Initial release
 # 2024-11-04 V1.1: Switch from wayfire to labwc
+# 2024-11-13 V1.2: Added setup of wlr-randr 
 
 # Function to display a spinner with additional message
 spinner() {
@@ -72,7 +73,7 @@ fi
 echo
 if ask_user "Do you want to install Wayland and labwc packages?"; then
     echo -e "\e[90mInstalling Wayland packages, please wait...\e[0m"
-    sudo apt install --no-install-recommends -y labwc seatd > /dev/null 2>&1 &
+    sudo apt install --no-install-recommends -y labwc wlr-randr seatd > /dev/null 2>&1 &
     spinner $! "Installing Wayland packages..."
 fi
 
