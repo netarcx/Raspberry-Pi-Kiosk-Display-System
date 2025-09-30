@@ -12,6 +12,7 @@
 # 2024-10-22 v1.0: Initial release
 # 2024-11-04 V1.1: Switch from wayfire to labwc
 # 2024-11-13 V1.2: Added setup of wlr-randr 
+# 2025-09-30 V2.0: MURA Pi Zero Fix
 
 # Function to display a spinner with additional message
 spinner() {
@@ -135,7 +136,7 @@ if ask_user "Do you want to create an autostart (chromium) script for labwc?"; t
         echo "Chromium autostart entry already exists in $LABWC_AUTOSTART_FILE."
     else
         echo -e "\e[90mAdding Chromium to labwc autostart script...\e[0m"
-        echo "/usr/bin/chromium-browser --incognito --autoplay-policy=no-user-gesture-required --kiosk $USER_URL &" >> "$LABWC_AUTOSTART_FILE"
+        echo "/usr/bin/chromium-browser --incognito --no-memcheck --autoplay-policy=no-user-gesture-required --kiosk $USER_URL &" >> "$LABWC_AUTOSTART_FILE"
     fi
     
     # Provide feedback about the autostart file location

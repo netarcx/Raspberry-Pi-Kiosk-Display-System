@@ -36,7 +36,7 @@ We encourage feedback and pull requests!
      bash kiosk_setup.sh
      ```
      OR
-   - simply run `bash <(curl -s https://raw.githubusercontent.com/TOLDOTECHNIK/Raspberry-Pi-Kiosk-Display-System/main/kiosk_setup.sh)`
+   - simply run `bash <(curl -s https://github.com/netarcx/Raspberry-Pi-Kiosk-Display-System/raw/refs/heads/main/kiosk_setup.sh)`
 
 
 3. **Follow the On-Screen Prompts:**
