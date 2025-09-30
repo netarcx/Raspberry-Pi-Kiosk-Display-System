@@ -250,8 +250,8 @@ if ask_user "Do you want to set the screen resolution in cmdline.txt and the lab
 
     # Add the command to .config/labwc/autostart if not present
     AUTOSTART_FILE="/home/$USER/.config/labwc/autostart"
-    if ! grep -q "wlr-randr --output HDMI-A-1 --mode $RESOLUTION" "$AUTOSTART_FILE"; then
-        echo "wlr-randr --output HDMI-A-1 --mode $RESOLUTION" >> "$AUTOSTART_FILE"
+    if ! grep -q "wlr-randr --pixman --output HDMI-A-1 --mode $RESOLUTION" "$AUTOSTART_FILE"; then
+        echo "wlr-randr --pixman --output HDMI-A-1 --mode $RESOLUTION" >> "$AUTOSTART_FILE"
         echo -e "\e[32m✔\e[0m Resolution command added to labwc autostart file successfully!"
     else
         echo -e "\e[33mAutostart file already contains this resolution command. No changes made.\e[0m"
